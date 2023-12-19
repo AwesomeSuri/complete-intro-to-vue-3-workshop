@@ -6,5 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — Complete Intro to Vue 3</title>
   </head>
-  <body></body>
+  <body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <h1>Hello Frontend Masters!</h1>
+    <div id="app">
+      <p v-if="message.length % 2 === 0">Even: {{ message }}</p>
+      <p v-else>Odd: {{ message }}</p>
+      <ul>
+        <li v-for="number in listOfNumbers">{{number}}</li>
+      </ul>
+      <hr />
+      <h1>{{displayedTitle}}</h1>
+      <p>{{count}}</p>
+      <button v-on:click="incrementCount">Increment</button>
+      <div>
+        <label for="incrementAmount">Increment by: </label>
+        <input type="number" v-model="incrementAmount" />
+      </div>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+
+      const app = createApp({
+        data: () => ({
+          message: "Hello it works",
+          listOfNumbers: [1, 2, 3, 4, 5, 6],
+          count: 0,
+          incrementAmount: 1,
+        }),
+        computed: {
+          displayedTitle() {
+            if (this.count > 20) return "Counter - Large";
+            return "Counter";
+          },
+        },
+        methods: {
+          incrementCount() {
+            this.count += this.incrementAmount;
+          },
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
 </html>
