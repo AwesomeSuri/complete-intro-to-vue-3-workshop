@@ -9,12 +9,24 @@
   <body>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <div id="app">
-      <label for="character-name">New Character:</label>
+      <label for="character-name">New Character: </label>
       <input
         type="text"
+        title="character-name"
+        name="character-name"
         v-model="newCharacter.name"
-        @keyup.enter="addCustomCharacter"
+        placeholder=""
       />
+      <div v-for="(element,type) in {Water: 0, Earth: 0, Fire:0, Air: 0}">
+        <input
+          type="checkbox"
+          :id="`${type}`"
+          :name="`${type}`"
+          v-model="newCharacter.elements[type]"
+        />
+        <label :for="`${type}`">{{type}}</label>
+      </div>
+      <button @click="addCustomCharacter">Add character</button>
       <h3>Character List:</h3>
       <p v-if="characterList.length === 0 && customCharacterList.length === 0">
         There are no characters
@@ -32,7 +44,7 @@
         </ul>
         <ul v-if="customCharacterList.length > 0">
           <li v-for="character in customCharacterList">
-            {{character.name}}
+            {{character.name}} {{character.elements .join(", ")}}
             <div>
               <button @click="addToFavourites(character)">
                 Add to Favourites
@@ -47,7 +59,7 @@
       <p v-if="favouriteList.length === 0">You have no favourite characters</p>
       <ul v-else>
         <li v-for="favourite in favouriteList">
-          {{favourite.name}}
+          {{favourite.name}} {{favourite.elements .join(", ")}}
           <div>
             <button @click="removeFromFavourites(favourite)">
               Remove from Favourites
@@ -57,10 +69,7 @@
       </ul>
       <h3>Statistics</h3>
       <ul>
-        <li>Water:</li>
-        <li>Earth: {{earthBenderList.length}}</li>
-        <li>Fire:</li>
-        <li>Air:</li>
+        <li v-for="(stat, type) in benderStatistics">{{type}}: {{stat}}</li>
       </ul>
     </div>
 
@@ -78,14 +87,30 @@
           favouriteList: [],
           newCharacter: {
             name: "",
-            elements: [],
+            elements: {
+              Water: false,
+              Earth: false,
+              Fire: false,
+              Air: false,
+            },
           },
         }),
         computed: {
-          earthBenderList() {
-            return this.favouriteList.filter((character) =>
-              character.elements.includes("Earth")
-            );
+          benderStatistics() {
+            const elements = ["Water", "Earth", "Fire", "Air"];
+            const statistics = {
+              Water: 0,
+              Earth: 0,
+              Fire: 0,
+              Air: 0,
+            };
+            this.favouriteList.forEach((character) => {
+              elements.forEach((element) => {
+                if (character.elements.indexOf(element) > -1)
+                  statistics[element] += 1;
+              });
+            });
+            return statistics;
           },
         },
         methods: {
@@ -95,18 +120,33 @@
           },
           removeFromFavourites(character) {
             const index = this.favouriteList.indexOf(character);
-            if (index > -1) this.favouriteList.splice(character, 1);
+            if (index > -1) this.favouriteList.splice(index, 1);
           },
           addCustomCharacter() {
             if (this.newCharacter.name.length > 0) {
-              this.customCharacterList.push(this.newCharacter);
+              const elements = ["Water", "Earth", "Fire", "Air"];
+              const masteredElements = [];
+              elements.forEach((element) => {
+                if (this.newCharacter.elements[element])
+                  masteredElements.push(element);
+              });
+              const newChar = {
+                name: this.newCharacter.name,
+                elements: masteredElements,
+              };
+              this.customCharacterList.push(newChar);
               this.newCharacter.name = "";
-              this.newCharacter.elements = [];
+              this.newCharacter.elements = {
+                Water: false,
+                Earth: false,
+                Fire: false,
+                Air: false,
+              };
             }
           },
           removeCustomCharacter(character) {
             const index = this.customCharacterList.indexOf(character);
-            if (index > -1) this.customCharacterList.splice(character, 1);
+            if (index > -1) this.customCharacterList.splice(index, 1);
           },
         },
       }).mount("#app");
