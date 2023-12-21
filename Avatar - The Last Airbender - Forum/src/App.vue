@@ -1,5 +1,12 @@
 <script>
+import CharacterList from './components/CharacterList.vue'
+import BenderStatistics from './components/BenderStatistics.vue'
+
 export default {
+  components: {
+    CharacterList,
+    BenderStatistics
+  },
   data: () => ({
     characterList: [
       { name: 'Aang', elements: ['Water', 'Earth', 'Fire', 'Air'] },
@@ -20,23 +27,6 @@ export default {
       }
     }
   }),
-  computed: {
-    benderStatistics() {
-      const elements = ['Water', 'Earth', 'Fire', 'Air']
-      const statistics = {
-        Water: 0,
-        Earth: 0,
-        Fire: 0,
-        Air: 0
-      }
-      this.favouriteList.forEach((character) => {
-        elements.forEach((element) => {
-          if (character.elements.indexOf(element) > -1) statistics[element] += 1
-        })
-      })
-      return statistics
-    }
-  },
   methods: {
     addToFavourites(character) {
       if (!this.favouriteList.includes(character)) this.favouriteList.push(character)
@@ -96,44 +86,34 @@ export default {
     <label :for="`${type}`">{{ type }}</label>
   </div>
   <button @click="addCustomCharacter">Add character</button>
+
   <h3>Character List:</h3>
   <p v-if="characterList.length === 0 && customCharacterList.length === 0">
     There are no characters
   </p>
   <div v-else>
-    <ul v-if="characterList.length > 0">
-      <li v-for="(character, index) in characterList" :key="`character-list: ${index}`">
-        {{ character.name }} {{ character.elements.join(', ') }}
-        <div>
-          <button @click="addToFavourites(character)">Add to Favourites</button>
-        </div>
-      </li>
-    </ul>
-    <ul v-if="customCharacterList.length > 0">
-      <li v-for="(character, index) in customCharacterList" :key="`custom-list: ${index}`">
-        {{ character.name }} {{ character.elements.join(', ') }}
-        <div>
-          <button @click="addToFavourites(character)">Add to Favourites</button>
-          <button @click="removeCustomCharacter(character)">Delete</button>
-        </div>
-      </li>
-    </ul>
+    <CharacterList
+      :characters="characterList"
+      :showButtons="{ add: true }"
+      @add="addToFavourites"
+    />
+    <CharacterList
+      :characters="customCharacterList"
+      :showButtons="{ add: true, removeCharacte: true }"
+      @add="addToFavourites"
+      @remove="removeCustomCharacter"
+    />
   </div>
 
   <h3>Favourite List:</h3>
   <p v-if="favouriteList.length === 0">You have no favourite characters</p>
-  <ul v-else>
-    <li v-for="(favourite, index) in favouriteList" :key="`favourite-list: ${index}`">
-      {{ favourite.name }} {{ favourite.elements.join(', ') }}
-      <div>
-        <button @click="removeFromFavourites(favourite)">Remove from Favourites</button>
-      </div>
-    </li>
-  </ul>
-  <h3>Statistics</h3>
-  <ul>
-    <li v-for="(stat, type) in benderStatistics" :key="`statistics: ${type}`">
-      {{ type }}: {{ stat }}
-    </li>
-  </ul>
+  <div v-else>
+    <CharacterList
+      :characters="favouriteList"
+      :showButtons="{ remove: true }"
+      @remove="removeFromFavourites"
+    />
+  </div>
+
+  <BenderStatistics :characters="favouriteList" />
 </template>
