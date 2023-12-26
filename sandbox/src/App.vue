@@ -1,23 +1,24 @@
 <script>
-import BaseCounter from './components/BaseCounter.vue'
+// https://pokeapi.co/api/v2pokemon?limit=151
 
 export default {
-  components: {
-    BaseCounter
-  },
   data: () => ({
-    message: 'Hello it works',
-    listOfNumbers: [1, 2, 3, 4, 5, 6]
-  })
+    pokedex: [1, 2, 3]
+  }),
+  methods: {
+    async fetchPokemon() {
+      this.pokedex = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151').then((response) =>
+        response.json()
+      )
+    }
+  },
+  created() {
+    this.fetchPokemon()
+  }
 }
 </script>
 
 <template>
-  <p v-if="message.length % 2 === 0">Even: {{ message }}</p>
-  <p v-else>Odd: {{ message }}</p>
-  <ul>
-    <li v-for="(number, index) in listOfNumbers" :key="`number-${index}`">{{ number }}</li>
-  </ul>
-  <hr />
-  <BaseCounter />
+  <h1>Pokedex</h1>
+  <pre>{{ pokedex }}</pre>
 </template>
