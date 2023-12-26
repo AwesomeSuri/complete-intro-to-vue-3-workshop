@@ -1,11 +1,13 @@
 <script>
 import CharacterList from './components/CharacterList.vue'
 import BenderStatistics from './components/BenderStatistics.vue'
+import BaseLayout from './components/BaseLayout.vue'
 
 export default {
   components: {
     CharacterList,
-    BenderStatistics
+    BenderStatistics,
+    BaseLayout
   },
   data: () => ({
     characterList: [
@@ -87,33 +89,38 @@ export default {
   </div>
   <button @click="addCustomCharacter">Add character</button>
 
-  <h3>Character List:</h3>
-  <p v-if="characterList.length === 0 && customCharacterList.length === 0">
-    There are no characters
-  </p>
-  <div v-else>
-    <CharacterList
-      :characters="characterList"
-      :showButtons="{ add: true }"
-      @add="addToFavourites"
-    />
-    <CharacterList
-      :characters="customCharacterList"
-      :showButtons="{ add: true, removeCharacte: true }"
-      @add="addToFavourites"
-      @remove="removeCustomCharacter"
-    />
-  </div>
-
-  <h3>Favourite List:</h3>
-  <p v-if="favouriteList.length === 0">You have no favourite characters</p>
-  <div v-else>
-    <CharacterList
-      :characters="favouriteList"
-      :showButtons="{ remove: true }"
-      @remove="removeFromFavourites"
-    />
-  </div>
+  <BaseLayout>
+    <template v-slot:one>
+      <h3>Character List:</h3>
+      <p v-if="characterList.length === 0 && customCharacterList.length === 0">
+        There are no characters
+      </p>
+      <div v-else>
+        <CharacterList
+          :characters="characterList"
+          :showButtons="{ add: true }"
+          @add="addToFavourites"
+        />
+        <CharacterList
+          :characters="customCharacterList"
+          :showButtons="{ add: true, removeCharacte: true }"
+          @add="addToFavourites"
+          @remove="removeCustomCharacter"
+        />
+      </div>
+    </template>
+    <template v-slot:two>
+      <h3>Favourite List:</h3>
+      <p v-if="favouriteList.length === 0">You have no favourite characters</p>
+      <div v-else>
+        <CharacterList
+          :characters="favouriteList"
+          :showButtons="{ remove: true }"
+          @remove="removeFromFavourites"
+        />
+      </div>
+    </template>
+  </BaseLayout>
 
   <BenderStatistics :characters="favouriteList" />
 </template>
